@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Image load performance</title>
+        <script>
+                window.onload = function() {
+                    // Page is loaded
+                    const objects = document.getElementsByClassName('asyncImage');
+        
+                    Array.from(objects).map((item) => {
+                        // Start loading image
+                        const img = new Image();
+                        img.src = item.src;
+                        // Once image is loaded replace the src of the HTML element
+                        img.onload = () => {
+        
+                        return item.nodeName === 'IMG' ? 
+                            (item.src = item.dataset.src) && waitForImageToLoad(item).then(()=>{
+                            // Image have loaded with actual size on browser. Remove blur now from css.
+                            document.querySelector(".asyncImage").classList.add("removeBlur");
+                        }) :
+                            ""
+                        };
+                    });
+                }
+                function waitForImageToLoad(imageElement){
+                    return new Promise(resolve=>{imageElement.onload = resolve})
+                }
+            </script>
+        <style>
+
+                img {
+                    height: 220px;
+                    width: 200px;
+                    -webkit-filter: blur(4px);
+                    filter: blur(4px);    
+                }
+
+                .removeBlur {
+                    transition: visibility 1s 1s, 1s linear;
+                    filter: blur(0);
+                }
+        </style>
+    </head>
+    <body>
+        <div style="    height: 220px;
+        overflow: hidden;
+        width: 190px;">
+            <img class="asyncImage" src="https://i.imgur.com/ffmMq6q.jpg" data-src="https://i.imgur.com/EWx6Ao5.jpg" alt="" />
+        </div>
+    </body>   
+</html>  
